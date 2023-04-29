@@ -1,0 +1,86 @@
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Books</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div th:block xmlns:th="http://www.thymeleaf.org">
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h3>All books listed</h3>
+        </div>
+    </section>
+
+    <div th:if="${hasError}">
+        <h5 class="text-center text-danger" th:text="${error}"></h5>
+    </div>
+
+    <div class="container mb-4">
+        <div class="row">
+            <div class="col-12" th:if="${books.size() > 0}">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">Book name</th>
+                            <th scope="col">Available copies</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Author</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="book : ${books}" class="book">
+                            <td th:text="${book.getName()}"></td>
+                            <td th:text="${book.getAvailableCopies()}"></td>
+                            <td th:text="${book.getCategory() != null}
+                            ? ${book.getCategory().getName()} : 'No Category'">></td>
+                            <td th:text="${book.getAuthor() != null}
+                                ? ${book.getAuthor().getName()} : 'No Author'"></td>
+                            <td class="text-left">
+                                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                                    <form th:action="@{'/books/delete/{id}' (id=${book.getId()})}"
+                                          th:method="DELETE">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger delete-product">
+                                            <i class="fa fa-trash">Delete</i>
+                                        </button>
+                                    </form>
+                                </th:block>
+                                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                                    <a th:href="@{'/books/edit-form/{id}' (id=${book.getId()})}"
+                                       class="btn btn-sm btn-info edit-product">
+                                        <i class="fa fa-trash">Edit</i>
+                                    </a>
+                                </th:block>
+                                <form th:action="@{'books/marktaken/{id}' (id=${book.getId()})}"
+                                      th:method="POST">
+                                    <button class="btn btn-sm btn-success change-item">Mark as taken</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a href="/books/add-form" class="btn btn-block btn-dark add-product-btn">
+                            Add new book
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
